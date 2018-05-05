@@ -16,8 +16,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
+        let mainVC = UINavigationController(rootViewController: EmojiArtDocumentVC())
+        let detailVC = EmojiArtViewController()
+        
+        let splitVC = UISplitViewController()
+        // [0] - master [1] - detail
+        splitVC.viewControllers = [mainVC, detailVC]
+        
         window = UIWindow(frame: UIScreen.main.bounds)        
-        window?.rootViewController = EmojiArtViewController()
+        window?.rootViewController = splitVC
         window?.makeKeyAndVisible()
         
         return true
