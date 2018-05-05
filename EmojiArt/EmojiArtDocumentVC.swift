@@ -11,17 +11,18 @@ import UIKit
 class EmojiArtDocumentVC: UITableViewController {
 
     var emojiArtDocuments = ["One", "Two", "Three"]
-    var cellId = "EmojiDocument"
+    var cellId = "DocumentCell"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellId)
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTapedAction))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newEomjiArt))
     }
     
-    @objc func addTapedAction() {
-        print("Works")
+    @objc func newEomjiArt() {
+        emojiArtDocuments += ["Untitled".madeUnique(withRespectTo: emojiArtDocuments)]
+        tableView.reloadData()
     }
 
     // MARK: - Table view data source
@@ -51,17 +52,12 @@ class EmojiArtDocumentVC: UITableViewController {
     }
     */
 
-    /*
-    // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Delete the row from the data source
+            emojiArtDocuments.remove(at: indexPath.item)
             tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+        }
     }
-    */
 
     /*
     // Override to support rearranging the table view.
