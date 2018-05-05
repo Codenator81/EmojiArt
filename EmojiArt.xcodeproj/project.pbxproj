@@ -59,12 +59,12 @@
 			isa = PBXGroup;
 			children = (
 				B8454DBA209D164A0014359E /* EmojiArtViewController.swift */,
+				B84F260A209DE96D0009BE64 /* EmojiArtDocumentVC.swift */,
 				B8454DCD209D237E0014359E /* Utilities.swift */,
 				B8454DCA209D18940014359E /* Supporting Files */,
 				B8454DC1209D164C0014359E /* LaunchScreen.storyboard */,
 				B8454DC4209D164C0014359E /* Info.plist */,
 				B8454DCB209D1AF30014359E /* EmojiArtView.swift */,
-				B84F260A209DE96D0009BE64 /* EmojiArtDocumentVC.swift */,
 			);
 			path = EmojiArt;
 			sourceTree = "<group>";
