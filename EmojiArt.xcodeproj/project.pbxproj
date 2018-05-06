@@ -16,6 +16,7 @@
 		B84F260B209DE96D0009BE64 /* EmojiArtDocumentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84F260A209DE96D0009BE64 /* EmojiArtDocumentVC.swift */; };
 		B84F2619209F0E110009BE64 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84F2618209F0E110009BE64 /* UIView+Extension.swift */; };
 		B84F261D209F297D0009BE64 /* EmojiCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84F261C209F297D0009BE64 /* EmojiCollectionViewCell.swift */; };
+		B84F261F209F8EDA0009BE64 /* EmojiPlaceholderCVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84F261E209F8EDA0009BE64 /* EmojiPlaceholderCVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		B84F260A209DE96D0009BE64 /* EmojiArtDocumentVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiArtDocumentVC.swift; sourceTree = "<group>"; };
 		B84F2618209F0E110009BE64 /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIView+Extension.swift"; path = "../../../../../../../../../Documents/UIView+Extension.swift"; sourceTree = "<group>"; };
 		B84F261C209F297D0009BE64 /* EmojiCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCollectionViewCell.swift; sourceTree = "<group>"; };
+		B84F261E209F8EDA0009BE64 /* EmojiPlaceholderCVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiPlaceholderCVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				B84F261C209F297D0009BE64 /* EmojiCollectionViewCell.swift */,
+				B84F261E209F8EDA0009BE64 /* EmojiPlaceholderCVC.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -186,6 +189,7 @@
 				B8454DCE209D237F0014359E /* Utilities.swift in Sources */,
 				B8454DCC209D1AF30014359E /* EmojiArtView.swift in Sources */,
 				B84F260B209DE96D0009BE64 /* EmojiArtDocumentVC.swift in Sources */,
+				B84F261F209F8EDA0009BE64 /* EmojiPlaceholderCVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

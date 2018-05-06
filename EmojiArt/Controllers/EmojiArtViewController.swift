@@ -15,6 +15,7 @@ class EmojiArtViewController: UIViewController {
     }
     var scrollViewSize: AnchorSize!
     let emojiCellId = "emojiCellId"
+    let dropPlaceholderCellId = "DropPlaceholderCell"
     var emojis = "😀🎁✈️🎱🍎🐶🐝☕️🎼🚲♣️👨‍🎓✏️🌈🤡🎓👻☎️".map { String($0) }
     
     lazy var emojiCV: UICollectionView = {
@@ -25,9 +26,11 @@ class EmojiArtViewController: UIViewController {
         cv.delegate = self
         cv.dataSource = self
         cv.dragDelegate = self
+        cv.dropDelegate = self
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.backgroundColor = .clear
         cv.register(EmojiCVC.self, forCellWithReuseIdentifier: emojiCellId)
+        cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: dropPlaceholderCellId)
         return cv
     }()
     
@@ -150,7 +153,7 @@ extension EmojiArtViewController: UIScrollViewDelegate {
     
 }
 
-extension EmojiArtViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate {
+extension EmojiArtViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return emojis.count
@@ -164,6 +167,7 @@ extension EmojiArtViewController: UICollectionViewDelegate, UICollectionViewData
     }
     
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        session.localContext = collectionView
         return dragItems(at: indexPath)
     }
     
@@ -180,6 +184,49 @@ extension EmojiArtViewController: UICollectionViewDelegate, UICollectionViewData
     func collectionView(_ collectionView: UICollectionView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem] {
         return dragItems(at: indexPath)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
+        return session.canLoadObjects(ofClass: NSAttributedString.self)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+        let isSelf = (session.localDragSession?.localContext as? UICollectionView) == collectionView
+        return UICollectionViewDropProposal(operation: isSelf ? .move : .copy, intent: .insertAtDestinationIndexPath)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+        let destinationIndexPath = coordinator.destinationIndexPath ?? IndexPath(item: 0, section: 0)
+        for item in coordinator.items {
+            if let sourceIndexPath = item.sourceIndexPath {
+                if let attributedString = item.dragItem.localObject as? NSAttributedString {
+                    collectionView.performBatchUpdates({
+                        emojis.remove(at: sourceIndexPath.item)
+                        emojis.insert(attributedString.string, at: destinationIndexPath.item)
+                        collectionView.deleteItems(at: [sourceIndexPath])
+                        collectionView.insertItems(at: [destinationIndexPath])
+                    })
+                    coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
+                }
+            } else {
+                let placeholderContext = coordinator.drop(
+                    item.dragItem,
+                    to: UICollectionViewDropPlaceholder(insertionIndexPath: destinationIndexPath, reuseIdentifier: dropPlaceholderCellId)
+                )
+                item.dragItem.itemProvider.loadObject(ofClass: NSAttributedString.self) { (provider, error) in
+                    DispatchQueue.main.async {
+                        if let attributedString = provider as? NSAttributedString {
+                            placeholderContext.commitInsertion(dataSourceUpdates: { (insertionIndexPath) in
+                                self.emojis.insert(attributedString.string, at: insertionIndexPath.item)
+                            })
+                        } else {
+                            placeholderContext.deletePlaceholder()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     
 }
 

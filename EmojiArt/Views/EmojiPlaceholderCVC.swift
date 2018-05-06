@@ -8,18 +8,17 @@
 
 import UIKit
 
-class EmojiCVC: UICollectionViewCell {
+class EmojiPlaceholderCVC: UICollectionViewCell {
     
-    let emojilabel: UILabel = {
-        let l = UILabel()
-        l.font = l.font.withSize(64)
-        l.clipsToBounds = true
+    let spinner: UIActivityIndicatorView = {
+        let l = UIActivityIndicatorView()
+        l.startAnimating()
         return l
     }()
     
     private func setupViews() {
-        addSubview(emojilabel)
-        emojilabel.centerAnchor(to: self)
+        addSubview(spinner)
+        spinner.centerAnchor(to: self)
     }
     
     override init(frame: CGRect) {
