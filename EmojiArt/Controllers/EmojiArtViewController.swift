@@ -10,8 +10,25 @@ import UIKit
 
 class EmojiArtViewController: UIViewController {
 
-    var scrollViewHeight: NSLayoutConstraint!
-    var scrollViewWidth: NSLayoutConstraint!
+    private var font: UIFont {
+        return UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.preferredFont(forTextStyle: .body).withSize(64.0))
+    }
+    var scrollViewSize: AnchorSize!
+    let emojiCellId = "emojiCellId"
+    var emojis = "😀🎁✈️🎱🍎🐶🐝☕️🎼🚲♣️👨‍🎓✏️🌈🤡🎓👻☎️".map { String($0) }
+    
+    lazy var emojiCV: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: 80, height: 80)
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.delegate = self
+        cv.dataSource = self
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.backgroundColor = .clear
+        cv.register(EmojiCVC.self, forCellWithReuseIdentifier: emojiCellId)
+        return cv
+    }()
     
     lazy var dropZone: UIView = {
         let v = UIView()
@@ -44,8 +61,8 @@ class EmojiArtViewController: UIViewController {
             let size = newValue?.size ?? CGSize.zero
             emojiArtView.frame = CGRect(origin: CGPoint.zero, size: size)
             scrollView.contentSize = size
-            scrollViewHeight.constant = size.height
-            scrollViewWidth.constant = size.width
+            scrollViewSize.height.constant = size.height
+            scrollViewSize.width.constant = size.width
             if size.width > 0 && size.height > 0 {
                 scrollView.zoomScale = max(dropZone.bounds.size.width / size.width, dropZone.bounds.size.height / size.height)
             }
@@ -58,13 +75,19 @@ class EmojiArtViewController: UIViewController {
         setupViews()
     }
     
-    func setupViews() {
+    private func setupViews() {
+        view.addSubview(emojiCV)
         view.addSubview(dropZone)
         dropZone.addSubview(scrollView)
         scrollView.addSubview(emojiArtView)
         [
+            emojiCV.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            emojiCV.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            emojiCV.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
+            emojiCV.heightAnchor.constraint(equalToConstant: 80),
+            
             dropZone.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-            dropZone.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            dropZone.topAnchor.constraint(equalTo: emojiCV.bottomAnchor, constant: 8),
             dropZone.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
             dropZone.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
@@ -72,16 +95,10 @@ class EmojiArtViewController: UIViewController {
             scrollView.topAnchor.constraint(greaterThanOrEqualTo: dropZone.topAnchor),
             scrollView.rightAnchor.constraint(greaterThanOrEqualTo: dropZone.rightAnchor),
             scrollView.bottomAnchor.constraint(greaterThanOrEqualTo: dropZone.bottomAnchor),
-            scrollView.centerYAnchor.constraint(greaterThanOrEqualTo: dropZone.centerYAnchor),
-            scrollView.centerXAnchor.constraint(greaterThanOrEqualTo: dropZone.centerXAnchor),
-        ].forEach({$0.isActive = true})
+        ].forEach({$0.isActive = true})        
         
-        scrollViewHeight = scrollView.heightAnchor.constraint(equalTo: dropZone.heightAnchor)
-        scrollViewWidth = scrollView.widthAnchor.constraint(equalTo: dropZone.widthAnchor)
-        scrollViewWidth.priority = UILayoutPriority(rawValue: 250)
-        scrollViewHeight.priority = UILayoutPriority(rawValue: 250)
-        scrollViewHeight.isActive = true
-        scrollViewWidth.isActive = true
+        scrollView.centerAnchor(to: dropZone)
+        scrollViewSize = scrollView.sizeAnchor(equalTo: dropZone, priority: 250)
     }
 }
 
@@ -126,9 +143,30 @@ extension EmojiArtViewController: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        scrollViewHeight.constant = scrollView.contentSize.height
-        scrollViewWidth.constant = scrollView.contentSize.width
+        scrollViewSize.height.constant = scrollView.contentSize.height
+        scrollViewSize.width.constant = scrollView.contentSize.width
     }
     
 }
+
+extension EmojiArtViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return emojis.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: emojiCellId, for: indexPath) as! EmojiCVC
+        let text = NSAttributedString(string: emojis[indexPath.item], attributes: [.font: font])
+        cell.emojilabel.attributedText = text
+        return cell
+    }
+    
+    
+}
+
+
+
+
+
 
