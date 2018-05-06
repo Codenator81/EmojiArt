@@ -70,7 +70,6 @@
 				B8454DCA209D18940014359E /* Supporting Files */,
 				B8454DC1209D164C0014359E /* LaunchScreen.storyboard */,
 				B8454DC4209D164C0014359E /* Info.plist */,
-				B8454DCB209D1AF30014359E /* EmojiArtView.swift */,
 			);
 			path = EmojiArt;
 			sourceTree = "<group>";
@@ -108,6 +107,7 @@
 			children = (
 				B84F261C209F297D0009BE64 /* EmojiCollectionViewCell.swift */,
 				B84F261E209F8EDA0009BE64 /* EmojiPlaceholderCVC.swift */,
+				B8454DCB209D1AF30014359E /* EmojiArtView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
