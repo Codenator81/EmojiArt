@@ -9,13 +9,15 @@
 import UIKit
 
 class EmojiArtViewController: UIViewController {
-
+    
     private var font: UIFont {
         return UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.preferredFont(forTextStyle: .body).withSize(64.0))
     }
     var scrollViewSize: AnchorSize!
     let emojiCellId = "emojiCellId"
     let dropPlaceholderCellId = "DropPlaceholderCell"
+    let emojiInputCellId = "EmojiInputCell"
+    let addEmojiButtonCellId = "AddEmojiButtonCell"
     var emojis = "😀🎁✈️🎱🍎🐶🐝☕️🎼🚲♣️👨‍🎓✏️🌈🤡🎓👻☎️".map { String($0) }
     
     lazy var emojiCV: UICollectionView = {
@@ -31,6 +33,8 @@ class EmojiArtViewController: UIViewController {
         cv.backgroundColor = .clear
         cv.register(EmojiCVC.self, forCellWithReuseIdentifier: emojiCellId)
         cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: dropPlaceholderCellId)
+        cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: addEmojiButtonCellId)
+        cv.register(TextFieldCollectionViewCell.self, forCellWithReuseIdentifier: emojiInputCellId)
         return cv
     }()
     
@@ -50,6 +54,22 @@ class EmojiArtViewController: UIViewController {
         s.translatesAutoresizingMaskIntoConstraints = false
         return s
     }()
+    
+    private var addingEmoji = false
+    
+    let addEmojiButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setTitle("+", for: .normal)
+        b.titleLabel?.font = b.titleLabel?.font.withSize(50)
+        b.addTarget(self, action: #selector(addEmoji), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
+    @objc private func addEmoji() {
+        addingEmoji = true
+        emojiCV.reloadSections(IndexSet(integer: 0))
+    }
     
     let emojiArtView = EmojiArtView()
     
@@ -99,7 +119,7 @@ class EmojiArtViewController: UIViewController {
             scrollView.topAnchor.constraint(greaterThanOrEqualTo: dropZone.topAnchor),
             scrollView.rightAnchor.constraint(greaterThanOrEqualTo: dropZone.rightAnchor),
             scrollView.bottomAnchor.constraint(greaterThanOrEqualTo: dropZone.bottomAnchor),
-        ].forEach({$0.isActive = true})        
+            ].forEach({$0.isActive = true})
         
         scrollView.centerAnchor(to: dropZone)
         scrollViewSize = scrollView.sizeAnchor(equalTo: dropZone, priority: 250)
@@ -155,15 +175,60 @@ extension EmojiArtViewController: UIScrollViewDelegate {
 
 extension EmojiArtViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate {
     
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 2
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return emojis.count
+        switch section {
+        case 0: return 1
+        case 1: return emojis.count
+        default: return 0
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: emojiCellId, for: indexPath) as! EmojiCVC
-        let text = NSAttributedString(string: emojis[indexPath.item], attributes: [.font: font])
-        cell.emojilabel.attributedText = text
-        return cell
+        if indexPath.section == 1 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: emojiCellId, for: indexPath)
+            if let emojiCell = cell as? EmojiCVC {
+                let text = NSAttributedString(string: emojis[indexPath.item], attributes: [.font: font])
+                emojiCell.emojilabel.attributedText = text
+            }
+            return cell
+        } else if addingEmoji {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: emojiInputCellId, for: indexPath)
+            if let inputCell = cell as? TextFieldCollectionViewCell {
+                inputCell.resignationHandler = { [weak self, unowned inputCell] in
+                    if let text = inputCell.textField.text {
+                        self?.emojis = (text.map { String($0) } + self!.emojis).uniquified
+                    }
+                    self?.addingEmoji = false
+                    self?.emojiCV.reloadData()
+                }
+            }
+            
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: addEmojiButtonCellId, for: indexPath)
+            cell.addSubview(addEmojiButton)
+            addEmojiButton.centerAnchor(to: cell)
+            return cell
+        }
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if addingEmoji && indexPath.section == 0 {
+            return CGSize(width: 300, height: 80)
+        } else {
+            return CGSize(width: 80, height: 80)
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if let inputCell = cell as? TextFieldCollectionViewCell {
+            inputCell.textField.becomeFirstResponder()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
@@ -172,7 +237,7 @@ extension EmojiArtViewController: UICollectionViewDelegate, UICollectionViewData
     }
     
     private func dragItems(at indexPath: IndexPath) -> [UIDragItem] {
-        if let attributedString = (emojiCV.cellForItem(at: indexPath) as? EmojiCVC)?.emojilabel.attributedText {
+        if !addingEmoji, let attributedString = (emojiCV.cellForItem(at: indexPath) as? EmojiCVC)?.emojilabel.attributedText {
             let dragItem = UIDragItem(itemProvider: NSItemProvider(object: attributedString))
             dragItem.localObject = attributedString
             return [dragItem]
@@ -190,8 +255,12 @@ extension EmojiArtViewController: UICollectionViewDelegate, UICollectionViewData
     }
     
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
-        let isSelf = (session.localDragSession?.localContext as? UICollectionView) == collectionView
-        return UICollectionViewDropProposal(operation: isSelf ? .move : .copy, intent: .insertAtDestinationIndexPath)
+        if let indexPath = destinationIndexPath, indexPath.section == 1 {
+            let isSelf = (session.localDragSession?.localContext as? UICollectionView) == collectionView
+            return UICollectionViewDropProposal(operation: isSelf ? .move : .copy, intent: .insertAtDestinationIndexPath)
+        } else {
+            return UICollectionViewDropProposal(operation: .cancel)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
