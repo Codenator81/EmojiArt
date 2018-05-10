@@ -19,6 +19,7 @@
 		B84F261D209F297D0009BE64 /* EmojiCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84F261C209F297D0009BE64 /* EmojiCollectionViewCell.swift */; };
 		B84F261F209F8EDA0009BE64 /* EmojiPlaceholderCVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84F261E209F8EDA0009BE64 /* EmojiPlaceholderCVC.swift */; };
 		B8E72D3F20A4D2DE0068D894 /* DraggableString.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E72D3E20A4D2DE0068D894 /* DraggableString.swift */; };
+		B8E72D4120A4D7010068D894 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B8E72D4020A4D7010068D894 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		B84F261C209F297D0009BE64 /* EmojiCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCollectionViewCell.swift; sourceTree = "<group>"; };
 		B84F261E209F8EDA0009BE64 /* EmojiPlaceholderCVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiPlaceholderCVC.swift; sourceTree = "<group>"; };
 		B8E72D3E20A4D2DE0068D894 /* DraggableString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableString.swift; sourceTree = "<group>"; };
+		B8E72D4020A4D7010068D894 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +93,7 @@
 		B8454DCA209D18940014359E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B8E72D4020A4D7010068D894 /* README.md */,
 				B8454DBF209D164C0014359E /* Assets.xcassets */,
 				B8454DB8209D164A0014359E /* AppDelegate.swift */,
 			);
@@ -184,6 +187,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B8E72D4120A4D7010068D894 /* README.md in Resources */,
 				B8454DC3209D164C0014359E /* LaunchScreen.storyboard in Resources */,
 				B8454DC0209D164C0014359E /* Assets.xcassets in Resources */,
 			);
