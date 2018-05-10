@@ -24,7 +24,7 @@ class EmojiArtView: UIView, UIDropInteractionDelegate {
     }
     
     func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
-        return session.canLoadObjects(ofClass: NSAttributedString.self)
+        return session.canLoadObjects(ofClass: DraggableString.self)
     }
     
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
@@ -32,15 +32,19 @@ class EmojiArtView: UIView, UIDropInteractionDelegate {
     }
     
     func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
-        session.loadObjects(ofClass: NSAttributedString.self) { providers in
+        session.loadObjects(ofClass: DraggableString.self) { providers in
             let dropPoint = session.location(in: self)
-            for attributedString in providers as? [NSAttributedString] ?? [] {
-                self.addLabel(with: attributedString, centeredAt: dropPoint)
+            for attString in providers as? [DraggableString] ?? [] {                
+                if let text = attString.text, let fontSize = attString.fontSize {
+                    let font = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.preferredFont(forTextStyle: .body).withSize(fontSize))
+                    let string = NSAttributedString(string: text, attributes: [.font: font])
+                    self.addLabel(with: string, centeredAt: dropPoint)
+                }
             }
         }
     }
     
-    private func addLabel(with attributedString: NSAttributedString, centeredAt point: CGPoint) {
+    func addLabel(with attributedString: NSAttributedString, centeredAt point: CGPoint) {
         let label = UILabel()
         label.backgroundColor = .clear
         label.attributedText = attributedString
